@@ -17,13 +17,10 @@ technician assignments.
 
 =============================
 
--- 1. CLEAN UP (Drop tables if they already exist
-for easy testing)
+-- 1. CLEAN UP (Drop tables if they already exist for easy testing)
 BEGIN
 FOR t IN (SELECT table_name FROM user_tables
-WHERE table_name IN ('TICKETS',
-
-'TECHNICIANS', 'USERS')) LOOP
+WHERE table_name IN ('TICKETS', 'TECHNICIANS', 'USERS')) LOOP
 EXECUTE IMMEDIATE 'DROP TABLE ' ||
 t.table_name || ' CASCADE CONSTRAINTS';
 END LOOP;
@@ -63,9 +60,7 @@ title VARCHAR2(100) NOT NULL,
 priority VARCHAR2(10) CHECK (priority IN
 ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL')),
 status VARCHAR2(15) DEFAULT 'OPEN' CHECK
-(status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED',
-
-'CLOSED')),
+(status IN ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED')),
 created_at DATE DEFAULT SYSDATE NOT NULL,
 resolved_at DATE,
 CONSTRAINT fk_ticket_user FOREIGN KEY
@@ -80,6 +75,7 @@ ON DELETE SET NULL
 INSERT INTO USERS (first_name, last_name,
 email, department) VALUES ('Ana', 'Antic',
 'ana.antic@company.com', 'Finance');
+
 INSERT INTO USERS (first_name, last_name,
 email, department) VALUES ('Milovan',
 'Milovanovic', 'm.milovanovic@company.com',
@@ -92,6 +88,7 @@ email, department) VALUES ('Jelena', 'Jovanovic',
 INSERT INTO TECHNICIANS (first_name,
 last_name, tier_level, status) VALUES ('Igor',
 'Ignovic', 1, 'AVAILABLE');
+
 INSERT INTO TECHNICIANS (first_name,
 last_name, tier_level, status) VALUES ('Nemanja',
 'Nikolic', 2, 'BUSY');
@@ -99,9 +96,11 @@ last_name, tier_level, status) VALUES ('Nemanja',
 INSERT INTO TICKETS (user_id, tech_id, title,
 priority, status) VALUES (1, 1, 'Cannot connect to
 VPN from home Office', 'HIGH', 'IN_PROGRESS');
+
 INSERT INTO TICKETS (user_id, tech_id, title,
 priority, status) VALUES (2, 2, 'Oracle Database
 connection timed out', 'CRITICAL', 'OPEN');
+
 INSERT INTO TICKETS (user_id, tech_id, title,
 priority, status) VALUES (3, NULL, 'Printer in
 Room 302 needs toner replacement', 'LOW',
@@ -110,8 +109,7 @@ Room 302 needs toner replacement', 'LOW',
 COMMIT;
 
 -- 4. ANALYTICAL BUSINESS QUERY WITH JOIN
--- Goal: Get a clear overview of all active critical
-and high priority tickets
+-- Goal: Get a clear overview of all active critical and high priority tickets
 SELECT
 t.ticket_id,
 t.title AS ticket_issue,
@@ -131,8 +129,7 @@ t.status != 'RESOLVED'
 ORDER BY t.created_at DESC;
 
 -- 5. PL/SQL STORED FUNCTION
--- Goal: Calculate total number of open tickets
-for a specific technician
+-- Goal: Calculate total number of open tickets for a specific technician
 CREATE OR REPLACE FUNCTION
 get_tech_open_tickets(p_tech_id IN NUMBER)
 RETURN NUMBER IS
@@ -150,8 +147,7 @@ END;
 /
 
 -- 6. PL/SQL DATABASE TRIGGER
--- Goal: Automatically update resolved_at date
-when ticket status changes to RESOLVED
+-- Goal: Automatically update resolved_at date when ticket status changes to RESOLVED
 CREATE OR REPLACE TRIGGER
 trg_set_resolved_date
 BEFORE UPDATE ON TICKETS
